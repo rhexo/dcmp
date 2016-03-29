@@ -24,14 +24,14 @@ include_directories( "${PROJECT_SOURCE_DIR}/include" ${local_include})
 #file(GLOB SOURCES "*.cpp")
 
 # Create application executable
-add_executable(dcmp  
+add_executable(mpdc
   main.cpp
-  dcmp.cpp)
+  mpdc.cpp)
 
 
 # Support for libpqxx
 #set(pqxx_lib "/usr/local/lib/libpqxx.so")
 
-find_library(DBACC_LIBRARY NAMES dbacc PATHS ${CMAKE_BINARY_DIR} NO_DEFAULT_PATH)
+# find_library(DBACC_LIBRARY NAMES dbacc PATHS ${CMAKE_BINARY_DIR} NO_DEFAULT_PATH)
 # link with boost libraries
-target_link_libraries(websnap ${Boost_LIBRARIES} ${DBACC_LIBRARY})
+# target_link_libraries(websnap ${Boost_LIBRARIES} ${DBACC_LIBRARY})
