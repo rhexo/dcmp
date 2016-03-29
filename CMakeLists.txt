@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Project`s name
-project(websnap)
+project(mpdc)
 
 # Set the output folder where your program will be created
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
