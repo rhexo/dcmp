@@ -26,6 +26,7 @@ include_directories( "${PROJECT_SOURCE_DIR}/include" ${local_include})
 # Create application executable
 add_executable(mpdc
   main.cpp
+  include/mpdc.hpp
   mpdc.cpp)
 
 
