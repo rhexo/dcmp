@@ -56,8 +56,7 @@ std::ostream& operator<<(std::ostream&, mp::Int&);
 std::ostream& operator<<(std::ostream&, mp::Int&&);
 
 /** реализуем сумму */
-template <typename T>
-mp::Int operator+(T&&, T&&);
+mp::Int operator+(mp::Int&&, mp::Int&&);
 mp::Int operator+(mp::Int&, mp::Int&&);
 mp::Int operator+(mp::Int&, mp::Int&);
 mp::Int operator+(mp::Int&&, mp::Int&);
