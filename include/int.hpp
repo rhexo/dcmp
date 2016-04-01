@@ -1,34 +1,26 @@
-#ifndef _MPDC_HPP
-#define _MPDC_HPP
+/**
+ * copyright 2015 Maxim Musolov
+ */
 
-#include <iostream>
-#include <cstdint>
+#ifndef _MPDC_INT_HPP
+#define _MPDC_INT_HPP
+
 #include <string>
+#include <iostream>
+
+#include <bitset.hpp>
 
 namespace mp {
-  
-  typedef typename std::uint64_t ui64_t;
-  typedef typename std::uint32_t ui32_t;
 
-  static constexpr int bitarity = 64;
-
-  template <typename T = int>
-  struct data_t {
-    std::bitset<bitarity> *value = nullptr;
-    T n;
-  };
-
-  /** разрядность вычислений x32 */
   class Int {
   public:
     
     /** Конструкторы */
     Int();
     Int(Int&&);  // copy
-    Int(Int&);  // copy
+    Int(Int&);   // copy
     Int(std::string&&);
-    Int(std::string&
-);
+    Int(std::string&);
 
     /** Преобразуем к строке */
     std::string to_string();
@@ -38,7 +30,7 @@ namespace mp {
 
   private:
     
-    data_t<> data;
+    bitset data;
 
     /** Внешний тип -> внутренний тип */
     void to_internal(std::string&);
@@ -61,4 +53,6 @@ mp::Int operator+(mp::Int&, mp::Int&&);
 mp::Int operator+(mp::Int&, mp::Int&);
 mp::Int operator+(mp::Int&&, mp::Int&);
 
+
 #endif
+
