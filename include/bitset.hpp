@@ -17,7 +17,7 @@ namespace mp {
 #define __MP_INDEX ui32_t
 
 
-  static const int byte_length = 8;
+  static const __MP_INDEX __wl = 8 * sizeof(__MP_TYPE);
 
   //static constexpr int bitarity = 64;
   
@@ -33,7 +33,11 @@ namespace mp {
   enum NumSys {NumBin, NumDec};
 
   /** Класс представления числа в виде последовательности битов */
-  struct bitset {
+  class bitset {
+
+    friend class bitset;
+    friend bitset sum(bitset&, bitset&);
+
   public:
 
     typedef __MP_TYPE type;
@@ -44,8 +48,6 @@ namespace mp {
     bitset(bitset&);
     bitset(bitset&&);
 
-    __MP_TYPE *data;
-    __MP_INDEX length;
 
     bit_t 
     get(__MP_INDEX);
@@ -63,24 +65,35 @@ namespace mp {
     to_char(NumSys) const;        
 
   private: 
+
+    __MP_TYPE **__data;
+    __MP_INDEX __size;
     
     //Очищаем память выделенную под хранение числа
     void 
     free();
+
     // Копируем из области памяти
     void 
-    copy(__MP_TYPE*,__MP_INDEX);
+    copy(bitset&);
     
-    // Проверяем, что индекс, определенный как параметр, соответствует всем 
-    // ограничениям, чтобы называться таковым
-    void 
-    check_index_valid(__MP_INDEX);
+    // // Проверяем, что индекс, определенный как параметр, соответствует всем 
+    // // ограничениям, чтобы называться таковым
+    // void 
+    // check_index_valid(__MP_INDEX);
+
     // Вывод: "1001" -> 0b1001
     void 
     char_to_bin_deduce(char *);
+
     // Вывод: "9" -> 0b1001
     void 
     char_to_dec_deduce(char *);
+
+    // Расширяем сегмент данных, выделенный под хранение
+    void 
+    augment_data(__MP_INDEX _size);
+
   };
 
 
@@ -93,18 +106,6 @@ namespace mp {
   namespace core {
 
     /** Область центральных функция для реализации операций над типом bitset */
-
-    // допустимые коммутации между переносами
-    // SH_K - kill; i-ый бит не зависит от типа переноса i-1 бита
-    // SH_P - propagate; i-ый бит зависит от типа переноса i-1 бита
-    // SH_G - generate; i-ый бит генерирует перенос в i+1 
-    enum shift_type {SH_K = 0, SH_P = 1, SH_G = -1 };
-  
-    // Коммутационная таблица по типам переносов
-    // shift_type[i+1] = SH_TAB[shift_type[i-1]][shift_type[i]] - рекурентная форма
-    const int SH_TAB[3][3] = { {SH_K, SH_K, SH_G},
-                               {SH_K, SH_P, SH_G},
-                               {SH_K, SH_G, SH_G} };
 
     /** Вычисляем вектор переносов для типа __MP_TYPE 
      *  В качестве результата возвращаем бит переноса 
@@ -120,6 +121,17 @@ namespace mp {
      */
     __MP_TYPE 
     get_parity_vector(__MP_TYPE __a, __MP_TYPE __b, __MP_TYPE __c);
+
+    /** Вычисляем значение бита на базе типа __MP_TYPE
+     */
+    bit_t
+    get_vector_bit(__MP_INDEX __index, __MP_TYPE __c);
+
+    /** Вычисляем новое значение бита на базе типа __MP_TYPE
+     */
+    void
+    set_vector_bit(__MP_INDEX __index, bit_t d,  __MP_TYPE& __c);
+
     
   }
 };
