@@ -71,7 +71,7 @@ namespace mp {
       augment_data(x);
     
     // get: bit(y) of cluster(x)
-    return (data[x] >> y) & 1;
+    return (*__data[x] >> y) & 1;
 
   };
   
@@ -93,10 +93,10 @@ namespace mp {
 
     if (_b & 1) {
       // bit(y) of cluster(x) -> 1
-      data[x] |= 1 << y;
+      *__data[x] |= 1 << y;
     } else {
       // bit(y) of cluster(x) -> 0
-      data[x] &= ~(1 << y);
+      *__data[x] &= ~(1 << y);
     }    
     
   };
@@ -132,7 +132,7 @@ namespace mp {
 
     if (_b.__data != nullptr) {
       // Выделяем область памяти под хранение числа
-      __data = new *__MP_TYPE[_b.__size];
+      __data = new __MP_TYPE*[_b.__size];
       for(i=0;i< _b.__size;i++){
         // Выделяем память под хранение части числа, размером __MP_TYPE
         __data[i] = new __MP_TYPE;
@@ -195,7 +195,7 @@ namespace mp {
       return;
 
     // Выделяем новый сегмент, под хранение "связывающей" структуры
-    data = new *__MP_TYPE[_size];
+    data = new __MP_TYPE* [_size];
     
     for (i=0;i< _size;i++) {
       if (i > __size) {
@@ -216,10 +216,9 @@ namespace mp {
     
   };
 
-
+  /** Сумма */
   bitset sum(bitset& a, bitset& b){
-    
-    
+        
 
     return bitset();
   };
@@ -255,14 +254,18 @@ namespace mp {
       // Векторный преобразователь y -> c
       int _r[3] = {0,-1,1};
 
-      int _x[mp::byte_length * sizeof(__MP_TYPE) + 1];
-      int _y[mp::byte_length * sizeof(__MP_TYPE) + 1];
+      int _x[mp::__wl + 1];
+      int _y[mp::__wl + 1];
       __c = 0b0;
       
       _x[0] = SH_K;
-      _y[0] = SH_K;
 
-      for (i=1;i<=(mp::byte_length * sizeof(__MP_TYPE)); i++){
+      _y[0] = SH_K;
+      // Если первый бит является корректиркющим, то определяем как генерацию перестановки
+      if (get_vector_bit((__MP_INDEX)(1),__c))
+        _y[0] = SH_G;
+
+      for (i=1;i<=mp::__wl;i++){
         
         j = i-1;
         // Вычисляем значения j-го бита чисел __a и __b
@@ -282,18 +285,16 @@ namespace mp {
       }
 
       // Вычисление вектора перестановок и бита переноса
-      for (i=0;i<(mp::byte_length * sizeof(__MP_TYPE)); i++) {
+      for (i=0;i<mp::__wl; i++) {
         // Ошибка алгоритма
         if (_r[_y[i]] == -1)
           throw std::runtime_error("get_majority_vector сломался!");
-
-        if (i < (mp::byte_length * sizeof(__MP_TYPE))) 
-          // Вычисляем вектор переносов
-          set_vector_bit((__MP_INDEX)i,(bit_t)_r[_y[i]],__c);          
+        // Вычисляем вектор переносов
+        set_vector_bit((__MP_INDEX)i,(bit_t)_r[_y[i]],__c);          
       }
       
       // Возвращаем результирующий бит переноса
-      return (bit_t)_r[_y[(mp::byte_length * sizeof(__MP_TYPE))]];
+      return (bit_t)_r[_y[mp::__wl]];
       
     };
 
