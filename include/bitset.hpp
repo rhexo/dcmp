@@ -55,14 +55,23 @@ namespace mp {
     void 
     set(__MP_INDEX, bit_t);
 
-    __MP_TYPE 
+    __MP_INDEX 
     count() const;
+
+    void
+    shift_left(__MP_INDEX);
+
+    void
+    shift_right(__MP_INDEX);
     
     void 
     from_char(NumSys,char*);
 
     char* 
     to_char(NumSys) const;        
+
+    void
+    clear();
 
   private: 
 
@@ -73,15 +82,13 @@ namespace mp {
     void 
     free();
 
+    __MP_INDEX
+    get_valid_bits_count();
+
     // Копируем из области памяти
     void 
     copy(bitset&);
     
-    // // Проверяем, что индекс, определенный как параметр, соответствует всем 
-    // // ограничениям, чтобы называться таковым
-    // void 
-    // check_index_valid(__MP_INDEX);
-
     // Вывод: "1001" -> 0b1001
     void 
     char_to_bin_deduce(char *);
@@ -92,7 +99,19 @@ namespace mp {
 
     // Расширяем сегмент данных, выделенный под хранение
     void 
-    augment_data(__MP_INDEX _size);
+    augment_data(__MP_INDEX);
+
+    // Расширяем сегмент данных, выделенный под хранение
+    void 
+    augment_data(bitset& );
+    
+    // Оптимизируем память, занимаемую под хранение числа
+    void
+    optimize_data();
+
+    // Полчить a*b(i)*2^i
+    bitset
+    get_mi(bit_t, __MP_INDEX);
 
   };
 
@@ -102,6 +121,14 @@ namespace mp {
    */
   bitset 
   sum(bitset&, bitset&);
+
+
+  /** Операция: умножение
+   *  Реализуем матричный умножитель
+   */
+  bitset 
+  multiply(bitset&, bitset&);
+
   
   namespace core {
 

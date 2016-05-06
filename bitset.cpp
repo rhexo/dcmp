@@ -145,15 +145,25 @@ namespace mp {
 
   };
 
-  // /** Проверяем, что индекс является корректным и указывает 
-  //     на существуеще множество битов 
-  // */
-  // void 
-  // bitset::check_index_valid(__MP_INDEX _index){
-  //   // Если index > count throw out_of_range
-  //   if ((_index-1) > this->count())
-  //     throw std::out_of_range(std::to_string(_index));    
-  // };
+    __MP_INDEX
+    bitset::get_valid_bits_count() {
+      
+      __MP_INDEX i;
+      __MP_INDEX j;      
+      __MP_TYPE a;
+      
+      for (i=(__size-1);i>=0;i--){
+        a = *__data[i];
+        for (j=1;i<=__wl;j++){
+          if ( core::get_vector_bit(__wl,a) )
+            return (__wl-j+1) * (i+1);
+          // Сдвигаем a на 1 влево
+          a <<= 1;
+        }
+      }
+      // Фактически значение равно нулю
+      return 0;
+    }
 
 
   // Вывод: "1001" -> 0b1001
@@ -216,14 +226,160 @@ namespace mp {
     
   };
 
-  /** Сумма */
-  bitset sum(bitset& a, bitset& b){
-        
+  // Расширяем сегмент данных, выделенный под хранение
+  void 
+  bitset::augment_data(bitset& _a) {
+    
+    // обобщаем с точностью до типа bitset
+    if (__size < _a.__size)
+      augment_data((__MP_INDEX)_a.size);
+  }
 
-    return bitset();
+  // Оптимизируем память, занимаемую под хранение числа
+  void
+  bitset::optimize_data(){
+        
+    __MP_INDEX bits = get_valid_bits_count();
+    __MP_INDEX to_size = ( bits / __wl ) + 1;
+
+    if (__size > to_size ) {
+      // Сжимаем память под хранение
+      // Выделяем новый сегмент, под хранение "связывающей" структуры
+      __MP_TYPE ** data = new __MP_TYPE* [to_size];
+      
+      for (__MP_INDEX i = 0; i < to_size; i++)
+        data[i] = __data[i];
+
+      delete __data;
+
+      __data = data;
+      __size = to_size;      
+      
+    }
+  };
+
+  // Реализация побитового сдвига влево
+  void
+  bitset::shift_left(__MP_INDEX _n){
+    
+  };
+
+  // Реализация побитового сдвига вправо
+  void
+  bitset::shift_right(__MP_INDEX _n) {
+
+  };
+
+  void
+  bitset::clear(){
+    
+    for (__MP_INDEX i=0;i<__size;i++)
+      *__data[i] = 0;
+    // __size --> 1
+    optimize_data();
+  };
+
+
+  // Полчить a*b(i)*2^i
+  bitset
+  bitset::get_mi(bitset& _b, __MP_INDEX _i) {
+    
+    bitset res;
+    
+    res.copy(_b);
+    
+    return res;
+  };
+
+
+  /** Сумма */
+  bitset sum(bitset& _a, bitset& _b){
+        
+    
+    bit_t res_bit;
+    __MP_TYPE c;
+    __MP_TYPE b;
+    __MP_TYPE a;
+    __MP_INDEX index;
+
+    // Выделяем переменную под хранение результата сложения
+    bitset res;
+    
+    if (_a.__size > res.__size)
+      res.__size = _a.__size;
+
+    if (_b.__size > res.__size)
+      res.__size = _b.__size;
+    
+    // Выделяем новый сегмент, под хранение "связывающей" структуры
+    res.__data = new __MP_TYPE* [res.__size];
+    
+    // Инициализация бита переноса
+    res_bit = 0b0;
+    // Общий цикл суммирования
+    for (index = 0;index < res.__size;index++){
+
+      if (index < _a.__size)
+        a = *_a.__data[index];
+      else
+        a = 0;
+
+      if (index < _b.__size)
+        b = *_b.__data[index];
+      else
+        b = 0;
+
+      // Инициализация вектора переносов
+      c = 0;
+      // Корректируем вектор с учетом последнего переноса
+      core::set_vector_bit(1,res_bit,c);      
+      // Вычисляем вектор переносов
+      res_bit = core::get_majority_vector(a,b,c);
+      // суммируем сегмент числа
+      *res.__data[index] = core::get_parity_vector(a,b,c);
+        
+    }
+  
+        
+    if (res_bit == 0b1) {      
+      // Требуется увеличить кластер данных на 1 и присвоить первому биту значение res_bit
+      ++index;
+      // Увличиваем размер памяти под хранения числа
+      res.augment_data(index);
+      // Инициализация сегмента числа
+      if (res.__size == index)
+        core::set_vector_bit(1,(bit_t) 0b1,*res.__data[index-1]);
+      else
+        throw std::runtime_error("не удалось расширить сегмент памяти под число");
+    }
+    
+    // Возвращаем вычисленный результат
+    return res;
   };
   
   
+
+  /** Операция: умножение
+   *  Реализуем матричный умножитель
+   */
+  bitset multiply(bitset& _a, bitset& _b){
+    
+    __MP_TYPE a;
+    __MP_TYPE b;
+    __MP_TYPE c;
+    bit_t res_bit;
+    
+    // Выделяем память под хранение результата
+    bitset res;
+    
+    
+    
+
+    return res;
+  };
+
+
+
   namespace core {
     
     /** Раздел центральных функций по раоте с битами */
