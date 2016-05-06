@@ -262,6 +262,27 @@ namespace mp {
   void
   bitset::shift_left(__MP_INDEX _n){
     
+    bit_t last_bit  = 0; //core::get_vector_bit(sizeof(__MP_TYPE),*__data[__size-1]);
+    __MP_INDEX index = __size;
+    __MP_TYPE data;
+
+    // Если переполнение, то увеличиваем занимаемый под хранение числа массив данных
+    // if (last_bit == 0b1)
+    //   augment_data(__size+1);
+
+    while ( index > 0)
+      
+      // Копируем для дальнейших нужд
+      data = *__data[index-1];
+    
+      // Выполняем перенос бита
+      if ( i > 0)
+        core::set_vector_bit(1,last_bit,*__data[i]);
+      // 
+      last_bit = core::get_vector_bit( sizeof(__MP_TYPE), *__data[i] );
+      
+    }
+
   };
 
   // Реализация побитового сдвига вправо
