@@ -269,6 +269,9 @@ namespace mp {
     // Если переполнение, то увеличиваем занимаемый под хранение числа массив данных
     // if (last_bit == 0b1)
     //   augment_data(__size+1);
+    
+    // функция вычисления бита смещения
+    // f : (segment_index,segment_bit,n,vect) -> (segment_index,segment_bit)
 
     while ( index > 0)
       
@@ -311,6 +314,59 @@ namespace mp {
     
     return res;
   };
+
+  void     
+  bitset::get_bit_index_rel(__MP_INDEX _si,__MP_INDEX _bi,
+                      __MP_INDEX _n, VectShift _v,
+                      __MP_INDEX& _nsi, __MP_INDEX& _nbi) {
+
+    
+    __MP_INDEX lmod = _n % __wl;
+    __MP_INDEX ldiv = _n / __wl;
+
+    switch (_v)
+      {
+      case VLeft:
+        // Выполняем смещение влево
+        _nsi = _si + ldiv;
+        if ( _bi + lmod ) > __wl
+           ++_nsi;
+        _nbi = ( _bi + lmod ) % __wl;
+      case VRight:
+        // Выполняем смещение вправо
+        _nsi = 0;
+        if ( _si >= l_div )          
+          _nsi = _si - ldiv;
+
+        if ( _bi < lmod ) {
+
+          if (_nsi > 0) {
+            --_nsi;                                
+            _nbi = __wl - ( lmod - _bi);          
+          }else {
+            _nbi = 0;
+          }
+
+        } else {
+
+          _nbi = _bi - lmod;
+
+          if (_nbi == 0)
+            if (_nsi > 0){
+              // Корректируем индекс
+              _nbi = __wl;
+              --_nsi;            
+            }
+
+        }
+
+      case default:
+        // Так как неизвстен тип смещениея, возвращаем те же значения
+        _nsi = _si;
+        _nbi = _bi;
+      }
+  };
+
 
 
   /** Сумма */

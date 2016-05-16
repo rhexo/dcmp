@@ -31,7 +31,8 @@ namespace mp {
   */
 
   enum NumSys {NumBin, NumDec};
-
+  
+  enum VectShift {VLeft, VRight};
   /** Класс представления числа в виде последовательности битов */
   class bitset {
 
@@ -112,6 +113,15 @@ namespace mp {
     // Полчить a*b(i)*2^i
     bitset
     get_mi(bit_t, __MP_INDEX);
+    
+    /**
+      * f : (segment_index,segment_bit,n,vect) -> (segment_index,segment_bit)
+      * Получаем относительный номер бита с учетом смещения
+      */
+    void     
+    get_bit_index_rel(__MP_INDEX,__MP_INDEX,
+                      __MP_INDEX, VectShift,
+                      __MP_INDEX&,__MP_INDEX&);
 
   };
 
