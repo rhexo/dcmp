@@ -13,6 +13,7 @@ namespace mp {
 
   bitset::bitset() {
     this->free();
+    
   };
 
 
@@ -127,6 +128,8 @@ namespace mp {
   bitset::copy(bitset& _b){
     
     int i;
+    
+    
 
     this->free();
 
@@ -262,29 +265,32 @@ namespace mp {
   void
   bitset::shift_left(__MP_INDEX _n){
     
-    bit_t last_bit  = 0; //core::get_vector_bit(sizeof(__MP_TYPE),*__data[__size-1]);
-    __MP_INDEX index = __size;
-    __MP_TYPE data;
+    __MP_INDEX nsi;
+    __MP_INDEX nbi;
 
-    // Если переполнение, то увеличиваем занимаемый под хранение числа массив данных
-    // if (last_bit == 0b1)
-    //   augment_data(__size+1);
-    
-    // функция вычисления бита смещения
-    // f : (segment_index,segment_bit,n,vect) -> (segment_index,segment_bit)
-
-    while ( index > 0)
-      
-      // Копируем для дальнейших нужд
-      data = *__data[index-1];
-    
-      // Выполняем перенос бита
-      if ( i > 0)
-        core::set_vector_bit(1,last_bit,*__data[i]);
-      // 
-      last_bit = core::get_vector_bit( sizeof(__MP_TYPE), *__data[i] );
-      
+    // Основной цикл переноса битов числа при сдвиге влево
+    for (__MP_INDEX si=(__size - 1); si>=0; si--){
+      for (__MP_INDEX bi=__wl; bi>0; bi--) {
+        // Получем рассчетные значения сдвигаемого бита
+        get_bit_index_rel(si,bi,
+                          _n, VLeft,
+                          nsi,nbi);      
+        // Увеличиваем число кластеров под хранение числа
+        if (nsi > __size)
+          augment_data(nsi);
+        // выполняем get/set
+        this->set( (nsi*__wl)+nbi, this->get((nsi*__wl)+nbi));
+        
+      }
     }
+
+    // Обнуляем хвост
+    for (__MP_INDEX si=nsi; si>=0; si--){
+      for (__MP_INDEX bi= (si == nsi ? nbi : __wl); bi>0; bi--) {
+        // выполняем get/set
+        this->set( (si*__wl)+bi, (bit_t)0b0);        
+      }
+    }    
 
   };
 
@@ -319,7 +325,6 @@ namespace mp {
   bitset::get_bit_index_rel(__MP_INDEX _si,__MP_INDEX _bi,
                       __MP_INDEX _n, VectShift _v,
                       __MP_INDEX& _nsi, __MP_INDEX& _nbi) {
-
     
     __MP_INDEX lmod = _n % __wl;
     __MP_INDEX ldiv = _n / __wl;
@@ -331,7 +336,11 @@ namespace mp {
         _nsi = _si + ldiv;
         if ( _bi + lmod ) > __wl
            ++_nsi;
+
         _nbi = ( _bi + lmod ) % __wl;
+        if (_nbi == 0)
+          _nbi = __wl;  // Корректируем индекс
+
       case VRight:
         // Выполняем смещение вправо
         _nsi = 0;

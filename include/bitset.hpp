@@ -91,37 +91,28 @@ namespace mp {
     copy(bitset&);
     
     // Вывод: "1001" -> 0b1001
-    void 
-    char_to_bin_deduce(char *);
+    void char_to_bin_deduce(char *);
 
     // Вывод: "9" -> 0b1001
-    void 
-    char_to_dec_deduce(char *);
+    void char_to_dec_deduce(char *);
 
     // Расширяем сегмент данных, выделенный под хранение
-    void 
-    augment_data(__MP_INDEX);
+    void augment_data(__MP_INDEX);
 
     // Расширяем сегмент данных, выделенный под хранение
-    void 
-    augment_data(bitset& );
+    void augment_data(bitset& );
     
     // Оптимизируем память, занимаемую под хранение числа
-    void
-    optimize_data();
+    void optimize_data();
 
     // Полчить a*b(i)*2^i
-    bitset
-    get_mi(bit_t, __MP_INDEX);
+    bitset get_mi(bit_t, __MP_INDEX);
     
     /**
       * f : (segment_index,segment_bit,n,vect) -> (segment_index,segment_bit)
       * Получаем относительный номер бита с учетом смещения
       */
-    void     
-    get_bit_index_rel(__MP_INDEX,__MP_INDEX,
-                      __MP_INDEX, VectShift,
-                      __MP_INDEX&,__MP_INDEX&);
+    void get_bit_index_rel(__MP_INDEX, __MP_INDEX, __MP_INDEX, VectShift, __MP_INDEX&, __MP_INDEX&);
 
   };
 
