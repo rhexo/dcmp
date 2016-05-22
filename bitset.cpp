@@ -127,9 +127,7 @@ namespace mp {
   void 
   bitset::copy(bitset& _b){
     
-    int i;
-    
-    
+    int i;    
 
     this->free();
 
@@ -272,9 +270,7 @@ namespace mp {
     for (__MP_INDEX si=(__size - 1); si>=0; si--){
       for (__MP_INDEX bi=__wl; bi>0; bi--) {
         // Получем рассчетные значения сдвигаемого бита
-        get_bit_index_rel(si,bi,
-                          _n, VLeft,
-                          nsi,nbi);      
+        get_bit_index_rel(si, bi, _n, VLeft, nsi, nbi);      
         // Увеличиваем число кластеров под хранение числа
         if (nsi > __size)
           augment_data(nsi);
@@ -297,6 +293,31 @@ namespace mp {
   // Реализация побитового сдвига вправо
   void
   bitset::shift_right(__MP_INDEX _n) {
+
+    __MP_INDEX nsi;
+    __MP_INDEX nbi;
+
+    // Основной цикл переноса битов числа при сдвиге влево
+    for (__MP_INDEX si=0; si<__size0; si++){
+      for (__MP_INDEX bi=1; bi<=__wl; bi++) {
+        // Получем рассчетные значения сдвигаемого бита
+        get_bit_index_rel(si, bi, _n, VRight, nsi, nbi);      
+        // Увеличиваем число кластеров под хранение числа
+        if (nbi == 0)
+          continue;
+        // выполняем get/set
+        this->set( (nsi*__wl)+nbi, this->get((nsi*__wl)+nbi));
+        
+      }
+    }
+
+    // Обнуляем хвост
+    for (__MP_INDEX si=nsi; si<__size; si++){
+      for (__MP_INDEX bi= (si == nsi ? nbi : 1); bi<=__wl; bi++) {
+        // выполняем get/set
+        this->set( (si*__wl)+bi, (bit_t)0b0);        
+      }
+    }    
 
   };
 
